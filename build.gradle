@@ -20,6 +20,7 @@ dependencies {
     testImplementation 'org.springframework.boot:spring-boot-starter-test'
     testImplementation 'org.springframework.amqp:spring-rabbit-test'
     annotationProcessor 'org.springframework.boot:spring-boot-configuration-processor'
+    implementation 'org.json:json:20220320'
 }
 
 tasks.named('test') {
