@@ -15,7 +15,7 @@ import java.util.Map;
 import java.util.concurrent.TimeoutException;
 
 @Service
-public class WatermarkService {
+public class RabbitMQService {
 
     @Autowired
     RabbitTemplate rabbitTemplate;
@@ -23,7 +23,7 @@ public class WatermarkService {
     @Autowired
     RabbitMQConfig rabbitMQConfig;
 
-    public void sendWatermarkRequest(String text) throws IOException, TimeoutException {
+    public void sendRequest(String text) throws IOException, TimeoutException {
 
         Connection conn = getRabbitMqConnection();
         Channel channel = getRabbitMqChannel(conn);
@@ -57,15 +57,14 @@ public class WatermarkService {
         Channel channel = connection.createChannel();
 
         Map<String, Object> arguments = new HashMap<String, Object>();
-        arguments.put("x-queue-mode", "lazy");
-        channel.queueDeclare(rabbitMQConfig.getSendQueue(), true, false, false, arguments);
+        channel.queueDeclare(rabbitMQConfig.getSendQueue(), true, false, false, null);
 
         return channel;
     }
 
     private void sendMQRequest(Channel channel, JSONObject data) throws IOException {
         byte[] convertData = data.toString().getBytes();
-        channel.basicPublish("", "WMEmbedMessage", null, convertData);
+        channel.basicPublish("", rabbitMQConfig.getSendQueue(), null, convertData);
     }
 
 }
