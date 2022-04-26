@@ -14,12 +14,12 @@ import java.io.IOException;
 import java.util.concurrent.TimeoutException;
 
 @Component
-public class RabbitMQResponseScheduler {
+public class RabbitMQRequestScheduler {
 
     @Autowired
     RabbitMQConfig rabbitMQConfig;
 
-    public void receiveMassage() throws IOException, TimeoutException {
+    public void receiveMessage() throws IOException, TimeoutException {
 
         ConnectionFactory factory = new ConnectionFactory();
 
@@ -31,18 +31,37 @@ public class RabbitMQResponseScheduler {
         Connection conn = factory.newConnection();
         Channel channel = conn.createChannel();
 
-        channel.queueDeclare(rabbitMQConfig.getReceiveQueue(), true, false, false, null);
+        channel.queueDeclare(rabbitMQConfig.getSendQueue(), true, false, false, null);
 
         DeliverCallback deliverCallback = (consumerTag, delivery) -> {
             String messageString = new String(delivery.getBody(), "UTF-8");
             JSONObject message = new JSONObject(messageString);
 
-            String responseText = message.getString("result");
+            String responseText = message.getString("text");
             System.out.println(responseText);
+
+            String result;
+            ZipUtil zipUtil = new ZipUtil();
+            String fileName = responseText + ".zip";
+
+            try {
+                zipUtil.zip("/Users/cheil/Desktop/ziptest", fileName);
+                result = "Success";
+                // 성공 메시지
+            } catch (Exception e) {
+                e.getStackTrace();
+                result = "Fail";
+                // 살패 매시지
+            }
+
+            channel.queueDeclare(rabbitMQConfig.getReceiveQueue(), true, false, false, null);
+            JSONObject data = new JSONObject();
+            data.put("result", result);
+            byte[] convertData = data.toString().getBytes();
+            channel.basicPublish("", rabbitMQConfig.getReceiveQueue(), null, convertData);
         };
 
-        channel.basicConsume(rabbitMQConfig.getReceiveQueue(), true, deliverCallback, consumerTag -> {});
+        channel.basicConsume(rabbitMQConfig.getSendQueue(), true, deliverCallback, consumerTag -> {});
 
     }
-
 }
