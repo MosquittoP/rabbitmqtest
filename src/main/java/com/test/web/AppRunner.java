@@ -16,7 +16,7 @@ public class AppRunner implements CommandLineRunner {
     RabbitMQResponseScheduler responseScheduler;
 
     @Override
-    public void run(String... args) throws Exception {
+    public void run(String... args) throws Exception { // 별도 호출 없이 계속 메소드를 실행하도록 설정
         try {
             requestScheduler.receiveMessage();
             responseScheduler.receiveMassage();

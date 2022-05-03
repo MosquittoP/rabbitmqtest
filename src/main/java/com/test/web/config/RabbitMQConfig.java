@@ -3,6 +3,10 @@ package com.test.web.config;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.context.annotation.Configuration;
 
+/*
+Queue 설정 정보
+ */
+
 @Configuration
 @ConfigurationProperties(prefix="rabbitmq")
 public class RabbitMQConfig {

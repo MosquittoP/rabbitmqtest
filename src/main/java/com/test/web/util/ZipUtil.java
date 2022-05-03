@@ -19,12 +19,13 @@ public class ZipUtil {
             fos = new FileOutputStream(filePath + "/" + zipFileName);
             zos = new ZipOutputStream(fos);
             for (File file : fileLists) {
-                if (!file.getName().contains(".jpg")) continue;
+                if (!file.getName().contains(".jpg")) continue; // 각 파일이 이미지 파일이 아닌 경우 포함하지 않음
 
                 fis = new FileInputStream(file);
                 ZipEntry zipEntry = new ZipEntry(file.getName());
-                zos.putNextEntry(zipEntry);
+                zos.putNextEntry(zipEntry); // zip 파일 리스트에 포함
 
+                // 압축률 지정 및 압축
                 byte[] bytes = new byte[1024];
                 int size = 0;
                 while ((size = fis.read(bytes)) >= 0) {

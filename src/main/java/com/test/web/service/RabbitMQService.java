@@ -14,6 +14,10 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.concurrent.TimeoutException;
 
+/*
+Controller에서 들어온 요청에 따라 Queue에 압축파일 생성을 요청
+ */
+
 @Service
 public class RabbitMQService {
 
@@ -28,7 +32,7 @@ public class RabbitMQService {
         Connection conn = getRabbitMqConnection();
         Channel channel = getRabbitMqChannel(conn);
 
-        JSONObject data = new JSONObject();
+        JSONObject data = new JSONObject(); // 메시지는 json으로 전송
         data.put("text", text);
 
         sendMQRequest(channel, data);
@@ -38,7 +42,7 @@ public class RabbitMQService {
 
     }
 
-    private Connection getRabbitMqConnection() throws IOException, TimeoutException {
+    private Connection getRabbitMqConnection() throws IOException, TimeoutException { // Queue 설정 후 Rabbitmq 서버 연결
 
         ConnectionFactory factory = new ConnectionFactory();
 
@@ -52,7 +56,7 @@ public class RabbitMQService {
         return mConnection;
     }
 
-    private Channel getRabbitMqChannel(Connection connection) throws IOException {
+    private Channel getRabbitMqChannel(Connection connection) throws IOException { // 채널에 1번 Queue를 연결
 
         Channel channel = connection.createChannel();
 
@@ -64,7 +68,7 @@ public class RabbitMQService {
 
     private void sendMQRequest(Channel channel, JSONObject data) throws IOException {
         byte[] convertData = data.toString().getBytes();
-        channel.basicPublish("", rabbitMQConfig.getSendQueue(), null, convertData);
+        channel.basicPublish("", rabbitMQConfig.getSendQueue(), null, convertData); // Queue에 메시지를 보내는 메소드
     }
 
 }

@@ -13,6 +13,10 @@ import org.springframework.stereotype.Component;
 import java.io.IOException;
 import java.util.concurrent.TimeoutException;
 
+/*
+압축 결과를 받아와 출력
+ */
+
 @Component
 public class RabbitMQResponseScheduler {
 
